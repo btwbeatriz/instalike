@@ -1,5 +1,10 @@
 import express from "express";
+import conectarAoBanco from "./src/config/dbConfig.js";
 
+// Conecta ao banco de dados utilizando a string de conexão fornecida pela variável de ambiente
+const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
+
+// Array de posts inicial (pode ser usado para testes ou como fallback)
 const posts = [
     {
         id: 1,
@@ -33,24 +38,31 @@ const posts = [
     }
 ];
 
+// Cria uma instância do aplicativo Express
 const app = express();
+
+// Habilita o middleware para analisar requisições com corpo em formato JSON
 app.use(express.json());
 
+// Inicia o servidor na porta 3000
 app.listen(3000, () => {
-    console.log("Servidor escutando...");
+    console.log("Servidor escutando na porta 3000");
 });
 
-app.get("/posts", (req, res) => {
-    res.status(200).json(posts);
-});
-
-function buscarPostID(id){
-    return posts.findIndex((post) => {
-        return post.id === Number(id)
-    })
+// Função assíncrona para obter todos os posts do banco de dados
+async function getAllPosts() {
+    // Obtém o banco de dados 'imersao-instabytes' da conexão
+    const db = conexao.db("imersao-instabytes");
+    // Obtém a coleção 'posts' do banco de dados
+    const colecao = db.collection("posts");
+    // Retorna todos os documentos da coleção como um array
+    return colecao.find().toArray();
 }
 
-app.get("/posts/:id", (req, res) => {
-    const index = buscarPostID(req.params.id)
-    res.status(200).json(posts[index]);
+// Rota para obter todos os posts
+app.get("/posts", async (req, res) => {
+    // Chama a função para obter todos os posts do banco de dados
+    const posts = await getAllPosts();
+    // Envia uma resposta HTTP com status 200 e os posts em formato JSON
+    res.status(200).json(posts);
 });
