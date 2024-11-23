@@ -1,4 +1,5 @@
 import fs from "fs";
+import gerarDescricaoComGemini from "../services/geminiService.js";
 import { getAllPosts, createPost, refreshPost } from "../models/postsModel.js";
 
 // Função assíncrona para listar todos os posts
@@ -57,15 +58,22 @@ export async function refreshNewPost(req, res) {
   const id = req.params.id;
   // Constrói a URL da imagem do post
   const urlImage = `http://localhost:3000/${id}.png`;
-  // Cria um objeto com os novos dados do post, incluindo a URL da imagem
-  const post = {
-    imgUrl: urlImage,
-    descricao: req.body.descricao,
-    alt: req.body.alt
-  };
 
   try {
-    // Chama a função para atualizar o post no banco de dados
+    // Lê o conteúdo da imagem em um buffer
+    const imgBuffer = fs.readFileSync(`uploads/${id}.png`);
+
+    // Utiliza o modelo Gemini para gerar uma descrição para a imagem
+    const descricao = await gerarDescricaoComGemini(imgBuffer);
+
+    // Cria um objeto com os novos dados do post, incluindo a URL da imagem
+    const post = {
+      imgUrl: urlImage,
+      descricao: descricao,
+      alt: req.body.alt
+    };
+
+  // Chama a função para atualizar o post no banco de dados
     const createdPost = await refreshPost(id, post);
     // Envia uma resposta HTTP com status 200 e o post atualizado em formato JSON
     res.status(200).json(createdPost);
