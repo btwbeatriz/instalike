@@ -1,6 +1,14 @@
 import express from "express";
 import multer from "multer";
+import cors from "cors";
 import { listAllPosts, postNewPost, uploadImage, refreshNewPost } from "../controllers/postsController.js";
+
+const corsOptions = {
+  // Define a origem permitida para requisições cross-origin
+  origin: "localhost:8000",
+  // Define o status de sucesso
+  optionsSuccessStatus: 200
+}
 
 // Configura o armazenamento para o multer
 const storage = multer.diskStorage({
@@ -21,6 +29,8 @@ const storage = multer.diskStorage({
   const routes = (app) => {
     // Habilita o middleware para interpretar dados JSON no corpo da requisição
     app.use(express.json());
+    // Habilita o middleware para conectar com o front-end
+    app.use(cors(corsOptions));
   
     // Define uma rota para requisições GET em "/posts" (manipulada pela função listAllPosts)
     app.get("/posts", listAllPosts);
