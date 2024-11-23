@@ -15,7 +15,7 @@ export async function getAllPosts() {
 }
 
 // Função assíncrona para criar um novo post no banco de dados
-export async function createPost(newPost) {
+  export async function createPost(newPost) {
     // Obtém o banco de dados da conexão
     const db = conexao.db("imersao-instabytes");
     // Obtém a coleção 'posts' do banco de dados
@@ -33,5 +33,5 @@ export async function createPost(newPost) {
     // Converte o ID do post em um objeto ObjectId do MongoDB
     const objID = ObjectId.createFromHexString(id);
     // Atualiza o post com o novo conteúdo e retorna o resultado da operação
-    return colecao.updateOne({ _id: new ObjectId(objID) }, { $set: newPost });
+    return colecao.updateOne({ _id: new ObjectId(objID) }, {$set:newPost});
   }

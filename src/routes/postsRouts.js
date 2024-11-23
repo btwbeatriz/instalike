@@ -42,7 +42,7 @@ const storage = multer.diskStorage({
     app.post("/upload", upload.single("image"), uploadImage);
 
     // Define uma rota para requisições PUT em "/upload" (manipulada pela função refreshNewPost)
-    app.put("/upload:id", refreshNewPost);
+    app.put("/upload/:id", refreshNewPost);
   };
   
   // Exporta a função routes como padrão para uso em outros módulos
