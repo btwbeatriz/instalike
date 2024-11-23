@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { listAllPosts, postNewPost, uploadImage } from "../controllers/postsController.js";
+import { listAllPosts, postNewPost, uploadImage, refreshNewPost } from "../controllers/postsController.js";
 
 // Configura o armazenamento para o multer
 const storage = multer.diskStorage({
@@ -30,6 +30,9 @@ const storage = multer.diskStorage({
   
     // Define uma rota para requisições POST em "/upload" com um único arquivo chamado "image" (manipulada pelo middleware upload.single e depois pela função uploadImage)
     app.post("/upload", upload.single("image"), uploadImage);
+
+    // Define uma rota para requisições PUT em "/upload" (manipulada pela função refreshNewPost)
+    app.put("/upload:id", refreshNewPost);
   };
   
   // Exporta a função routes como padrão para uso em outros módulos

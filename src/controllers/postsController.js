@@ -1,5 +1,5 @@
 import fs from "fs";
-import { getAllPosts, createPost } from "../models/postsModel.js";
+import { getAllPosts, createPost, refreshPost } from "../models/postsModel.js";
 
 // Função assíncrona para listar todos os posts
 export async function listAllPosts(req, res) {
@@ -50,4 +50,29 @@ export async function uploadImage(req, res) {
       res.status(500).json({ "Erro": "Falha na requisição!" });
     }
   }
-  
+
+// Função assíncrona para atualizar um post existente
+export async function refreshNewPost(req, res) {
+  // Obtém o ID do post a ser atualizado dos parâmetros da requisição
+  const id = req.params.id;
+  // Constrói a URL da imagem do post
+  const urlImage = `http://localhost:3000/${id}.png`;
+  // Cria um objeto com os novos dados do post, incluindo a URL da imagem
+  const post = {
+    imgUrl: urlImage,
+    descricao: req.body.descricao,
+    alt: req.body.alt
+  };
+
+  try {
+    // Chama a função para atualizar o post no banco de dados
+    const createdPost = await refreshPost(id, post);
+    // Envia uma resposta HTTP com status 200 e o post atualizado em formato JSON
+    res.status(200).json(createdPost);
+  } catch (error) {
+    // Registra o erro no console
+    console.error(error.message);
+    // Envia uma resposta HTTP com status 500 e uma mensagem de erro
+    res.status(500).json({ "Erro": "Falha na requisição!" });
+  }
+}
